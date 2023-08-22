@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Memory Game</title>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        canvas {
+            width: 100%;
+        }
+        @font-face {
+            font-family: 'Inter';
+            src: url('assets/fonts/Inter-400.ttf');
+            font-weight: 400
+        }
+        @font-face {
+            font-family: 'Inter';
+            src: url('assets/fonts/Inter-500.ttf');
+            font-weight: 500
+        }
+        @font-face {
+            font-family: 'Inter';
+            src: url('assets/fonts/Inter-600.ttf');
+            font-weight: 600
+        }
+        @font-face {
+            font-family: 'Inter';
+            src: url('assets/fonts/Inter-700.ttf');
+            font-weight: 700
+        }
+        .fontPreloadInter400 {
+            font-family: 'Inter';
+            font-weight: 400;
+            position: absolute;
+            left: -100px;
+        }
+        .fontPreloadInter500 {
+            font-family: 'Inter';
+            font-weight: 500;
+            position: absolute;
+            left: -100px;
+        }
+        .fontPreloadInter600 {
+            font-family: 'Inter';
+            font-weight: 600;
+            position: absolute;
+            left: -100px;
+        }
+        .fontPreloadInter700 {
+            font-family: 'Inter';
+            font-weight: 700;
+            position: absolute;
+            left: -100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="fontPreloadInter400">.</div>
+    <div class="fontPreloadInter500">.</div>
+    <div class="fontPreloadInter600">.</div>
+    <div class="fontPreloadInter700">.</div>
+    <script src="assets/scripts/phaser.js"></script>
+    <script src="assets/scripts/prefabs/Card.js"></script>
+    <script src="assets/scripts/classes/LoadingBar.js"></script>
+    <script src="assets/scripts/scenes/BetweenGameScene.js"></script>
+    <script src="assets/scripts/scenes/EndGameScene.js"></script>
+    <script src="assets/scripts/scenes/Game2Scene.js"></script>
+    <script src="assets/scripts/scenes/GameScene.js"></script>
+    <script src="assets/scripts/scenes/StartScene.js"></script>
+    <script src="assets/scripts/scenes/PreloadScene.js"></script>
+    <script src="assets/scripts/scenes/BootScene.js"></script>
+    <script src="assets/scripts/main.js"></script>
+</body>
+</html>
