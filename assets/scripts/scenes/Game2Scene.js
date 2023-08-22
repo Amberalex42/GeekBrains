@@ -26,7 +26,9 @@ class Game2Scene extends Phaser.Scene{
     }
 
     update(){
-        if (this.ans_cards.every((x) => x.opened == true)){
+        if (this.ans_cards.every((x) => x.opened == true && this.gameContinuing == true)){
+            this.gameContinuing = false;
+            this.sounds.end_session.play();
             this.time.addEvent({
                 delay: 5000,
                 callback: ()=>{
@@ -34,9 +36,6 @@ class Game2Scene extends Phaser.Scene{
                 }
             })
         }
-        // if (this.ans_card1.opened && this.ans_card2.opened && this.ans_card3.opened && this.ans_card4.opened && this.ans_card5.opened){
-        //     this.scene.start('EndGame')
-        // }
     }
 
     createSounds(){
@@ -102,14 +101,7 @@ class Game2Scene extends Phaser.Scene{
             this.scene.start('Start');
         }, this);
         this.add.text(221, 80, "\nИмя\nФамилия\n", {font: "500 24px Inter", fill:"#1E1E1E"}).setOrigin(0);
-        // this.add.sprite(29, 260, 'leaderboard').setOrigin(0, 0);
         this.add.text(221, 166, "Новичок", {font: "400 24px Inter", fill:"#3C90DE"}).setOrigin(0);
-        // this.add.sprite(32, 329, 'heart').setOrigin(0, 0);
-        // this.add.text(100, 342, "Монеты", config.gameTextSettings).setOrigin(0);
-        // this.add.text(30, 389, "Драгоценные\n камни", config.gameTextSettings).setOrigin(0);
-        // this.add.sprite(404, 24, 'music').setOrigin(0, 0);
-        // this.add.sprite(470, 24, 'info').setOrigin(0, 0);
-        // this.add.sprite(1303, 9, 'close').setOrigin(0, 0);
     }
 
     createCards(){
@@ -133,42 +125,6 @@ class Game2Scene extends Phaser.Scene{
             this.ans_cards.push(card);
         }
 
-        // this.ans_card1 = new Card(this, 'Г');
-        // this.ans_card1.init({x: 949, y: 902, delay: 100});
-        // this.ans_card1.move({
-        //     x: this.ans_card1.position.x,
-        //     y: this.ans_card1.position.y,
-        //     delay: this.ans_card1.position.delay
-        // })
-        // this.ans_card2 = new Card(this, 'О')
-        // this.ans_card2.init({x: 1042, y: 902, delay: 200});
-        // this.ans_card2.move({
-        //     x: this.ans_card2.position.x,
-        //     y: this.ans_card2.position.y,
-        //     delay: this.ans_card2.position.delay
-        // })
-        // this.ans_card3 = new Card(this, 'Р')
-        // this.ans_card3.init({x: 1135, y: 902, delay: 300});
-        // this.ans_card3.move({
-        //     x: this.ans_card3.position.x,
-        //     y: this.ans_card3.position.y,
-        //     delay: this.ans_card3.position.delay
-        // })
-        // this.ans_card4 = new Card(this, 'О')
-        // this.ans_card4.init({x: 1228, y: 902, delay: 300});
-        // this.ans_card4.move({
-        //     x: this.ans_card4.position.x,
-        //     y: this.ans_card4.position.y,
-        //     delay: this.ans_card4.position.delay
-        // })
-        // this.ans_card5 = new Card(this, 'Д')
-        // this.ans_card5.init({x: 1321, y: 902, delay: 300});
-        // this.ans_card5.move({
-        //     x: this.ans_card5.position.x,
-        //     y: this.ans_card5.position.y,
-        //     delay: this.ans_card5.position.delay
-        // })
-
         this.input.on('dragstart', function (pointer, gameObject) {
             this.startDrag_x = gameObject.x
             this.startDrag_text_x = gameObject.caption.x
@@ -182,21 +138,6 @@ class Game2Scene extends Phaser.Scene{
                     card.setFrame(0);
                 }
             })
-            // if(this.ans_card1.opened != true){
-            //     this.ans_card1.setFrame(0);
-            // }
-            // if(this.ans_card2.opened != true){
-            //     this.ans_card2.setFrame(0);
-            // }
-            // if(this.ans_card3.opened != true){
-            //     this.ans_card3.setFrame(0);
-            // }
-            // if(this.ans_card4.opened != true){
-            //     this.ans_card4.setFrame(0);
-            // }
-            // if(this.ans_card5.opened != true){
-            //     this.ans_card5.setFrame(0);
-            // }
 
             gameObject.x = dragX;
             gameObject.caption.x = dragX + gameObject.width / 2;
@@ -209,17 +150,6 @@ class Game2Scene extends Phaser.Scene{
                 }
             })
 
-            // if (Math.abs(gameObject.x - this.ans_card1.x) < 50 && Math.abs(gameObject.y - this.ans_card1.y) < 50 && this.ans_card1.opened != true){
-            //     this.ans_card1.setFrame(1);
-            // }else if(Math.abs(gameObject.x - this.ans_card2.x) < 50 && Math.abs(gameObject.y - this.ans_card2.y) < 50){
-            //     this.ans_card2.setFrame(1);
-            // }else if(Math.abs(gameObject.x - this.ans_card3.x) < 50 && Math.abs(gameObject.y - this.ans_card3.y) < 50){
-            //     this.ans_card3.setFrame(1);
-            // }else if(Math.abs(gameObject.x - this.ans_card4.x) < 50 && Math.abs(gameObject.y - this.ans_card4.y) < 50){
-            //     this.ans_card4.setFrame(1);
-            // }else if(Math.abs(gameObject.x - this.ans_card5.x) < 50 && Math.abs(gameObject.y - this.ans_card5.y) < 50){
-            //     this.ans_card5.setFrame(1);
-            // }
         }, this);
 
         this.input.on('dragend', function (pointer, gameObject) {
@@ -228,35 +158,22 @@ class Game2Scene extends Phaser.Scene{
                 if (Math.abs(gameObject.x - card.x) < 50 && Math.abs(gameObject.y - card.y) < 50 && gameObject.value == card.value){
                     if(card.open != true){
                         card.setFrame(1).open();
+                        this.sounds.correct.play();
+                    }
+                }else{
+                    this.mistakeCount++;
+                    this.sounds.bulk.play();
+                    if (this.mistakeCount == 2){
+
                     }
                 }
             })
 
-            // if (Math.abs(gameObject.x - this.ans_card1.x) < 50 && Math.abs(gameObject.y - this.ans_card1.y) < 50 && gameObject.value == this.ans_card1.value){
-            //     if(this.ans_card1.open != true){
-            //         this.ans_card1.setFrame(1).open();
-            //     }
-            // }
-            // if(Math.abs(gameObject.x - this.ans_card2.x) < 50 && Math.abs(gameObject.y - this.ans_card2.y) < 50 && gameObject.value == this.ans_card2.value){
-            //     if(this.ans_card2.open != true){
-            //         this.ans_card2.setFrame(1).open();
-            //     }
-            // }
-            // if(Math.abs(gameObject.x - this.ans_card3.x) < 50 && Math.abs(gameObject.y - this.ans_card3.y) < 50 && gameObject.value == this.ans_card3.value){
-            //     if(this.ans_card3.open != true){
-            //         this.ans_card3.setFrame(1).open();
-            //     }
-            // }
-            // if(Math.abs(gameObject.x - this.ans_card4.x) < 50 && Math.abs(gameObject.y - this.ans_card4.y) < 50 && gameObject.value == this.ans_card4.value){
-            //     if(this.ans_card4.open != true){
-            //         this.ans_card4.setFrame(1).open();
-            //     }
-            // }
-            // if(Math.abs(gameObject.x - this.ans_card5.x) < 50 && Math.abs(gameObject.y - this.ans_card5.y) < 50 && gameObject.value == this.ans_card5.value){
-            //     if(this.ans_card5.open != true){
-            //         this.ans_card5.setFrame(1).open();
-            //     }
-            // }
+            this.ans_cards.forEach((card) => {
+                if(card.opened != true){
+                    card.setFrame(0);
+                }
+            })
 
             gameObject.x = this.startDrag_x
             gameObject.caption.x = this.startDrag_text_x
