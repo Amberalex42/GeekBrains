@@ -26,16 +26,7 @@ class Game2Scene extends Phaser.Scene{
     }
 
     update(){
-        if (this.ans_cards.every((x) => x.opened == true && this.gameContinuing == true)){
-            this.gameContinuing = false;
-            this.sounds.end_session.play();
-            this.time.addEvent({
-                delay: 5000,
-                callback: ()=>{
-                    this.scene.start('EndGame')
-                }
-            })
-        }
+
     }
 
     createSounds(){
@@ -87,18 +78,22 @@ class Game2Scene extends Phaser.Scene{
         this.soundButton = this.add.sprite(518, 78, 'sound').setOrigin(0, 0).setInteractive();
         this.soundButton.name = "soundButton";
         this.soundButton.on('pointerdown', function(pointer){
-            this.gameContinuing = false;
-            this.sounds.game2zadanie.once('complete', function(){
-                this.gameContinuing = true;
-            }, this);
-            this.sounds.game2zadanie.play();
+            if (this.gameContinuing){
+                this.gameContinuing = false;
+                this.sounds.game2zadanie.once('complete', function(){
+                    this.gameContinuing = true;
+                }, this);
+                this.sounds.game2zadanie.play();
+            }
         }, this)
         this.add.text(609, 78, "Угадай слова, нажимая", {font: "500 54px Inter", fill:"#B7C4DD"}).setOrigin(0);
-        this.add.text(609, 158, "Угадай слова, нажимая на клеточки с нужными слогами\nОчень маленькие кони. Догадались? Это - ...", {font: "500 24px Inter", fill:"#B7C4DD"}).setOrigin(0);
+        //this.add.text(609, 158, "Угадай слова, нажимая на клеточки с нужными слогами\nОчень маленькие кони. Догадались? Это - ...", {font: "500 24px Inter", fill:"#B7C4DD"}).setOrigin(0);
         this.closeButton = this.add.sprite(1776, 80, 'close').setOrigin(0, 0).setInteractive();
         this.closeButton.name = "closeButton";
         this.closeButton.on('pointerdown', function(pointer){
-            this.scene.start('Start');
+            if (this.gameContinuing){
+                this.scene.start('Start');
+            }
         }, this);
         this.add.text(221, 80, "\nИмя\nФамилия\n", {font: "500 24px Inter", fill:"#1E1E1E"}).setOrigin(0);
         this.add.text(221, 166, "Новичок", {font: "400 24px Inter", fill:"#3C90DE"}).setOrigin(0);
@@ -126,59 +121,98 @@ class Game2Scene extends Phaser.Scene{
         }
 
         this.input.on('dragstart', function (pointer, gameObject) {
-            this.startDrag_x = gameObject.x
-            this.startDrag_text_x = gameObject.caption.x
-            this.startDrag_y = gameObject.y
-            this.startDrag_text_y = gameObject.caption.y
+            if (this.gameContinuing){
+                this.startDrag_x = gameObject.x
+                this.startDrag_text_x = gameObject.caption.x
+                this.startDrag_y = gameObject.y
+                this.startDrag_text_y = gameObject.caption.y
+            }
         }, this);
 
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-            this.ans_cards.forEach((card) => {
-                if (card.opened != true){
-                    card.setFrame(0);
-                }
-            })
+            if (this.gameContinuing){
+                this.ans_cards.forEach((card) => {
+                    if (card.opened != true){
+                        card.setFrame(0);
+                    }
+                })
 
-            gameObject.x = dragX;
-            gameObject.caption.x = dragX + gameObject.width / 2;
-            gameObject.y = dragY;
-            gameObject.caption.y = dragY + gameObject.height / 2;
+                gameObject.x = dragX;
+                gameObject.caption.x = dragX + gameObject.width / 2;
+                gameObject.y = dragY;
+                gameObject.caption.y = dragY + gameObject.height / 2;
 
-            this.ans_cards.forEach((card) => {
-                if (Math.abs(gameObject.x - card.x) < 50 && Math.abs(gameObject.y - card.y) < 50 && card.opened != true){
-                    card.setFrame(1);
-                }
-            })
+                this.ans_cards.forEach((card) => {
+                    if (Math.abs(gameObject.x - card.x) < 50 && Math.abs(gameObject.y - card.y) < 50 && card.opened != true){
+                        card.setFrame(1);
+                    }
+                })
+            }
 
         }, this);
 
         this.input.on('dragend', function (pointer, gameObject) {
+            if (this.gameContinuing){
+                let mistake_flag = true
 
-            this.ans_cards.forEach((card) => {
-                if (Math.abs(gameObject.x - card.x) < 50 && Math.abs(gameObject.y - card.y) < 50 && gameObject.value == card.value){
-                    if(card.open != true){
-                        card.setFrame(1).open();
-                        this.sounds.correct.play();
+                this.ans_cards.forEach((card) => {
+                    if (Math.abs(gameObject.x - card.x) < 50 && Math.abs(gameObject.y - card.y) < 50 && gameObject.value == card.value){
+                        if(card.open != true){
+                            card.setFrame(1).open();
+                            this.sounds.correct.play();
+                            mistake_flag = false
+                        }
                     }
-                }else{
+                    if(card.opened != true){
+                        card.setFrame(0);
+                    }
+                })
+
+                if (this.ans_cards.every((x) => x.opened == true && this.gameContinuing == true)){
+                    this.gameContinuing = false;
+                    this.sounds.end_session.play();
+                    this.time.addEvent({
+                        delay: 5000,
+                        callback: ()=>{
+                            this.scene.start('EndGame')
+                        }
+                    })
+                }
+
+                if (mistake_flag){
                     this.mistakeCount++;
                     this.sounds.bulk.play();
                     if (this.mistakeCount == 2){
-
+                        this.cards.forEach(card => {
+                            if (this.level_answer.includes(card.value)) {
+                                card.once('animationcomplete', function(animation, frame){
+                                    console.log('animation complete');
+                                    this.gameContinuing = true;
+                                }, this);
+                                card.play('good_blink');
+                                this.gameContinuing = false;
+                            }
+                        });
+                    }else if (this.mistakeCount == 4){
+                        this.ans_cards.forEach((card) => {
+                            if(card.open != true){
+                                card.setFrame(1).open();
+                            }
+                        })
+                        this.time.addEvent({
+                            delay: 5000,
+                            callback: ()=>{
+                                this.scene.start('EndGame')
+                            }
+                        })
                     }
                 }
-            })
 
-            this.ans_cards.forEach((card) => {
-                if(card.opened != true){
-                    card.setFrame(0);
-                }
-            })
-
-            gameObject.x = this.startDrag_x
-            gameObject.caption.x = this.startDrag_text_x
-            gameObject.y = this.startDrag_y
-            gameObject.caption.y = this.startDrag_text_y
+                gameObject.x = this.startDrag_x;
+                gameObject.caption.x = this.startDrag_text_x;
+                gameObject.y = this.startDrag_y;
+                gameObject.caption.y = this.startDrag_text_y;
+            }
         }, this);
 
     }
