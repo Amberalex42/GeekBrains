@@ -9,13 +9,14 @@ class Card extends Phaser.GameObjects.Sprite {
         super(scene, 0, 0, texture);
         this.scene = scene;
         this.value = value;
+        this.opened=false;
         this.scene.add.existing(this);
 
         if(this.scene.scene.key == "Game2"){
             this.setInteractive({draggable: true});
         }else{
             this.setInteractive();
-        }   
+        }
     }
 
     init(position){

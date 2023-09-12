@@ -40,7 +40,8 @@ class Game2Scene extends Phaser.Scene{
             welldone: this.sound.add('welldone'),
             word2slog: this.sound.add('word2slog'),
             word3slog: this.sound.add('word3slog'),
-            game2zadanie: this.sound.add('game2zadanie')
+            game2zadanie: this.sound.add('game2zadanie'),
+            gorod: this.sound.add('gorod')
         };
     }
 
@@ -86,8 +87,8 @@ class Game2Scene extends Phaser.Scene{
                 this.sounds.game2zadanie.play();
             }
         }, this)
-        this.add.text(609, 78, "Угадай слова, нажимая", {font: "500 54px Inter", fill:"#B7C4DD"}).setOrigin(0);
-        //this.add.text(609, 158, "Угадай слова, нажимая на клеточки с нужными слогами\nОчень маленькие кони. Догадались? Это - ...", {font: "500 24px Inter", fill:"#B7C4DD"}).setOrigin(0);
+        this.add.text(609, 78, "Угадай-ка", {font: "500 54px Inter", fill:"#B7C4DD"}).setOrigin(0);
+        this.add.text(609, 158, "Угадай слово по картинке", {font: "500 24px Inter", fill:"#B7C4DD"}).setOrigin(0);
         this.closeButton = this.add.sprite(1776, 80, 'close').setOrigin(0, 0).setInteractive();
         this.closeButton.name = "closeButton";
         this.closeButton.on('pointerdown', function(pointer){
@@ -143,7 +144,7 @@ class Game2Scene extends Phaser.Scene{
                 gameObject.caption.y = dragY + gameObject.height / 2;
 
                 this.ans_cards.forEach((card) => {
-                    if (Math.abs(gameObject.x - card.x) < 50 && Math.abs(gameObject.y - card.y) < 50 && card.opened != true){
+                    if (Math.abs(gameObject.x - card.x) < 10 && Math.abs(gameObject.y - card.y) < 10 && card.opened != true){
                         card.setFrame(1);
                     }
                 })
@@ -153,14 +154,16 @@ class Game2Scene extends Phaser.Scene{
 
         this.input.on('dragend', function (pointer, gameObject) {
             if (this.gameContinuing){
-                let mistake_flag = true
+                let mistake_flag = false;
 
                 this.ans_cards.forEach((card) => {
-                    if (Math.abs(gameObject.x - card.x) < 50 && Math.abs(gameObject.y - card.y) < 50 && gameObject.value == card.value){
-                        if(card.open != true){
+                    console.log(card.opened);
+                    if (Math.abs(gameObject.x - card.x) < 10 && Math.abs(gameObject.y - card.y) < 10){
+                        mistake_flag = true;
+                        if(card.opened != true && gameObject.value == card.value){
                             card.setFrame(1).open();
                             this.sounds.correct.play();
-                            mistake_flag = false
+                            mistake_flag = false;
                         }
                     }
                     if(card.opened != true){
@@ -183,6 +186,12 @@ class Game2Scene extends Phaser.Scene{
                     this.mistakeCount++;
                     this.sounds.bulk.play();
                     if (this.mistakeCount == 2){
+                        this.gameContinuing = false;
+                        this.sounds.gorod.once('complete', function(){
+                            this.gameContinuing = true;
+                        }, this);
+                        this.sounds.gorod.play();
+                    }else if (this.mistakeCount == 3){
                         this.cards.forEach(card => {
                             if (this.level_answer.includes(card.value)) {
                                 card.once('animationcomplete', function(animation, frame){

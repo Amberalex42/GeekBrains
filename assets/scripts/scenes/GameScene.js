@@ -72,8 +72,8 @@ class GameScene extends Phaser.Scene{
         this.add.text(180, 707, "дней без\nпропуска", {font: "600 24px Inter", fill:"#B6C6DF"}).setOrigin(0);
         this.soundButton = this.add.sprite(518, 78, 'sound').setOrigin(0, 0).setInteractive();
         this.soundButton.name = "soundButton";
-        this.add.text(609, 78, "Угадай слова, нажимая", {font: "500 54px Inter", fill:"#B7C4DD"}).setOrigin(0);
-        this.add.text(609, 158, "Угадай слова, нажимая на клеточки с нужными слогами\nОчень маленькие кони. Догадались? Это - ...", {font: "500 24px Inter", fill:"#B7C4DD"}).setOrigin(0);
+        this.add.text(609, 78, "Угадай-ка", {font: "500 54px Inter", fill:"#B7C4DD"}).setOrigin(0);
+        this.add.text(609, 158, "Угадай слова, нажимая на клеточки с нужными слогами", {font: "500 24px Inter", fill:"#B7C4DD"}).setOrigin(0);
         this.closeButton = this.add.sprite(1776, 80, 'close').setOrigin(0, 0).setInteractive();
         this.closeButton.name = "closeButton";
         this.add.text(221, 80, "\nИмя\nФамилия\n", {font: "500 24px Inter", fill:"#1E1E1E"}).setOrigin(0);
@@ -190,7 +190,7 @@ class GameScene extends Phaser.Scene{
                 if (this.answerCount === this.levelAnswer.length){
                     this.answerPict.setVisible(true);
                     this.answerText.setVisible(true);
-                    this.sounds.end_session.play();
+                    this.sounds.correct.play();
                     this.gameContinuing = false;
                     this.time.addEvent({
                         delay: 5000,
@@ -199,7 +199,7 @@ class GameScene extends Phaser.Scene{
                         }
                     })
                 }else{
-                    this.sounds.correct.play();
+                    this.sounds.right_answer.play();
                 }
             }else{
                 card.once('animationcomplete', function(animation, frame) {
