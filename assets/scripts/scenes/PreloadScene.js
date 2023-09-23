@@ -43,6 +43,7 @@ class PreloadScene extends Phaser.Scene{
         this.load.audio('bulk', 'assets/sounds/bulk.mp3');
         this.load.audio('correct', 'assets/sounds/correct.mp3');
         this.load.audio('end_session', 'assets/sounds/end_session.mp3');
+        this.load.audio('end_wrong', 'assets/sounds/end_wrong.mp3');
         this.load.audio('game1_poni', 'assets/sounds/game1_poni.mp3');
         this.load.audio('game1_task', 'assets/sounds/game1_task.mp3');
         this.load.audio('right_answer', 'assets/sounds/right_answer.mp3');

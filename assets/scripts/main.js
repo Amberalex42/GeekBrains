@@ -10,7 +10,7 @@ let config = {
     },
     rows: 3,
     cols: 3,
-    cards: ["ПО", "НИ", "ЛО", "БО", "КО", "РО", "ВА", "БА", "РАН"],
+    cards: ["ПО", "БО", "НИ", "НЕ", "НЯ", "ПА", "БА", "ЛО", "ШАДЬ"],
     gameTextSettings: {
         font: "56px CurseCasual",
         fill: "#000000"

@@ -34,6 +34,7 @@ class Game2Scene extends Phaser.Scene{
             bulk: this.sound.add('bulk'),
             correct: this.sound.add('correct'),
             end_session: this.sound.add('end_session'),
+            end_wrong: this.sound.add('end_wrong'),
             game1_poni: this.sound.add('game1_poni'),
             game1_task: this.sound.add('game1_task'),
             right_answer: this.sound.add('right_answer'),
@@ -88,7 +89,7 @@ class Game2Scene extends Phaser.Scene{
             }
         }, this)
         this.add.text(609, 78, "Угадай-ка", {font: "500 54px Inter", fill:"#B7C4DD"}).setOrigin(0);
-        this.add.text(609, 158, "Угадай слово по картинке", {font: "500 24px Inter", fill:"#B7C4DD"}).setOrigin(0);
+        this.add.text(609, 158, "Угадай слово по картинке, выбери из предложенных букв нужные и перетащи в пустые клеточки. \nПрочитай, что получилось.", {font: "500 24px Inter", fill:"#B7C4DD"}).setOrigin(0);
         this.closeButton = this.add.sprite(1776, 80, 'close').setOrigin(0, 0).setInteractive();
         this.closeButton.name = "closeButton";
         this.closeButton.on('pointerdown', function(pointer){
@@ -103,12 +104,13 @@ class Game2Scene extends Phaser.Scene{
     createCards(){
         this.cards = [];
 
-        for (let value of ["М", "Л", "О", "У", "П", "Т", "Г", "Р", "В", "О", "Ч", "У", "Д", "Т"]){
+        for (let value of ["Л", "З", "П", "Г", "С", "О", "Б", "Т", "Ш", "Х", "Ж", "Д", "А", "Р"]){
             this.cards.push(new Card(this, value));
         }
 
         this.ans_cards = [];
         this.level_answer = ['Г', 'О', 'Р', 'О', 'Д'];
+        this.opened_array = [1, 1, 1, 0, 0]
 
         for (var i = 0; i < 5; i++){
             let card = new Card(this, this.level_answer[i]);
@@ -118,6 +120,10 @@ class Game2Scene extends Phaser.Scene{
                 y: card.position.y,
                 delay: card.position.delay
             })
+            if (this.opened_array[i] == 1){
+                card.open();
+                card.setFrame(1);
+            }
             this.ans_cards.push(card);
         }
 
@@ -162,7 +168,7 @@ class Game2Scene extends Phaser.Scene{
                         mistake_flag = true;
                         if(card.opened != true && gameObject.value == card.value){
                             card.setFrame(1).open();
-                            this.sounds.correct.play();
+                            this.sounds.right_answer.play();
                             mistake_flag = false;
                         }
                     }
@@ -173,7 +179,7 @@ class Game2Scene extends Phaser.Scene{
 
                 if (this.ans_cards.every((x) => x.opened == true && this.gameContinuing == true)){
                     this.gameContinuing = false;
-                    this.sounds.end_session.play();
+                    this.sounds.correct.play();
                     this.time.addEvent({
                         delay: 5000,
                         callback: ()=>{
@@ -191,7 +197,7 @@ class Game2Scene extends Phaser.Scene{
                             this.gameContinuing = true;
                         }, this);
                         this.sounds.gorod.play();
-                    }else if (this.mistakeCount == 3){
+                    }else if (this.mistakeCount == 4){
                         this.cards.forEach(card => {
                             if (this.level_answer.includes(card.value)) {
                                 card.once('animationcomplete', function(animation, frame){
@@ -202,7 +208,12 @@ class Game2Scene extends Phaser.Scene{
                                 this.gameContinuing = false;
                             }
                         });
-                    }else if (this.mistakeCount == 4){
+                    }else if (this.mistakeCount == 7){
+                        this.gameContinuing = false;
+                        this.sounds.end_wrong.once('complete', function(){
+                            this.gameContinuing = true;
+                        }, this);
+                        this.sounds.end_wrong.play();
                         this.ans_cards.forEach((card) => {
                             if(card.open != true){
                                 card.setFrame(1).open();
