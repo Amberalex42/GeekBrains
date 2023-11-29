@@ -3,7 +3,9 @@ class Game2Scene extends Phaser.Scene{
         super('Game2');
     }
 
-    create(){
+    create(data){
+        this.currentLevel = data.level
+        this.levelData = config.game2_data[this.currentLevel]
         this.anims.create({
             key: 'good_blink',
             frames: this.anims.generateFrameNumbers('card2_ss', {frames: [1, 0]}),
@@ -25,29 +27,22 @@ class Game2Scene extends Phaser.Scene{
 
     }
 
-    update(){
-
-    }
-
     createSounds(){
         this.sounds = {
             bulk: this.sound.add('bulk'),
             correct: this.sound.add('correct'),
             end_session: this.sound.add('end_session'),
             end_wrong: this.sound.add('end_wrong'),
-            game1_poni: this.sound.add('game1_poni'),
-            game1_task: this.sound.add('game1_task'),
             right_answer: this.sound.add('right_answer'),
             welldone: this.sound.add('welldone'),
-            word2slog: this.sound.add('word2slog'),
-            word3slog: this.sound.add('word3slog'),
-            game2zadanie: this.sound.add('game2zadanie'),
-            gorod: this.sound.add('gorod')
+            game2_task: this.sound.add(this.levelData.level_task_sound),
+            game2_riddle: this.sound.add(this.levelData.level_answer_sound),
+            wordslog: this.sound.add(this.levelData.level_answer_slog)
         };
     }
 
     createBackground(){
-        this.add.sprite(0, 0, 'bg').setOrigin(0, 0);
+        this.add.sprite(0, 0, 'bg2').setOrigin(0, 0);
 
         this.add.graphics()
             .fillStyle(0xffffff, 1)
@@ -82,10 +77,10 @@ class Game2Scene extends Phaser.Scene{
         this.soundButton.on('pointerdown', function(pointer){
             if (this.gameContinuing){
                 this.gameContinuing = false;
-                this.sounds.game2zadanie.once('complete', function(){
+                this.sounds.game2_task.once('complete', function(){
                     this.gameContinuing = true;
                 }, this);
-                this.sounds.game2zadanie.play();
+                this.sounds.game2_task.play();
             }
         }, this)
         this.add.text(609, 78, "Угадай-ка", {font: "500 54px Inter", fill:"#B7C4DD"}).setOrigin(0);
@@ -93,9 +88,10 @@ class Game2Scene extends Phaser.Scene{
         this.closeButton = this.add.sprite(1776, 80, 'close').setOrigin(0, 0).setInteractive();
         this.closeButton.name = "closeButton";
         this.closeButton.on('pointerdown', function(pointer){
-            if (this.gameContinuing){
+            //if (this.gameContinuing){
+                this.game.sound.stopAll();
                 this.scene.start('Start');
-            }
+            //}
         }, this);
         this.add.text(221, 80, "\nИмя\nФамилия\n", {font: "500 24px Inter", fill:"#1E1E1E"}).setOrigin(0);
         this.add.text(221, 166, "Новичок", {font: "400 24px Inter", fill:"#3C90DE"}).setOrigin(0);
@@ -104,13 +100,13 @@ class Game2Scene extends Phaser.Scene{
     createCards(){
         this.cards = [];
 
-        for (let value of ["Л", "З", "П", "Г", "С", "О", "Б", "Т", "Ш", "Х", "Ж", "Д", "А", "Р"]){
+        for (let value of this.levelData.cards){
             this.cards.push(new Card(this, value));
         }
 
         this.ans_cards = [];
-        this.level_answer = ['Г', 'О', 'Р', 'О', 'Д'];
-        this.opened_array = [1, 1, 1, 0, 0]
+        this.level_answer = this.levelData.level_answer;
+        this.opened_array = this.levelData.opened_array;
 
         for (var i = 0; i < 5; i++){
             let card = new Card(this, this.level_answer[i]);
@@ -128,118 +124,127 @@ class Game2Scene extends Phaser.Scene{
         }
 
         this.input.on('dragstart', function (pointer, gameObject) {
-            if (this.gameContinuing){
-                this.startDrag_x = gameObject.x
-                this.startDrag_text_x = gameObject.caption.x
-                this.startDrag_y = gameObject.y
-                this.startDrag_text_y = gameObject.caption.y
-            }
+            if(this.cards.indexOf(gameObject) != -1){
+                if (this.gameContinuing){
+                    this.startDrag_x = gameObject.x
+                    this.startDrag_text_x = gameObject.caption.x
+                    this.startDrag_y = gameObject.y
+                    this.startDrag_text_y = gameObject.caption.y
+                }
+            }  
         }, this);
 
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-            if (this.gameContinuing){
-                this.ans_cards.forEach((card) => {
-                    if (card.opened != true){
-                        card.setFrame(0);
-                    }
-                })
-
-                gameObject.x = dragX;
-                gameObject.caption.x = dragX + gameObject.width / 2;
-                gameObject.y = dragY;
-                gameObject.caption.y = dragY + gameObject.height / 2;
-
-                this.ans_cards.forEach((card) => {
-                    if (Math.abs(gameObject.x - card.x) < 10 && Math.abs(gameObject.y - card.y) < 10 && card.opened != true){
-                        card.setFrame(1);
-                    }
-                })
-            }
-
-        }, this);
-
-        this.input.on('dragend', function (pointer, gameObject) {
-            if (this.gameContinuing){
-                let mistake_flag = false;
-
-                this.ans_cards.forEach((card) => {
-                    console.log(card.opened);
-                    if (Math.abs(gameObject.x - card.x) < 10 && Math.abs(gameObject.y - card.y) < 10){
-                        mistake_flag = true;
-                        if(card.opened != true && gameObject.value == card.value){
-                            card.setFrame(1).open();
-                            this.sounds.right_answer.play();
-                            mistake_flag = false;
+            if(this.cards.indexOf(gameObject) != -1){
+                if (this.gameContinuing){
+                    this.ans_cards.forEach((card) => {
+                        if (card.opened != true){
+                            card.setFrame(0);
                         }
-                    }
-                    if(card.opened != true){
-                        card.setFrame(0);
-                    }
-                })
+                    })
 
-                if (this.ans_cards.every((x) => x.opened == true && this.gameContinuing == true)){
-                    this.gameContinuing = false;
-                    this.sounds.correct.play();
-                    this.time.addEvent({
-                        delay: 5000,
-                        callback: ()=>{
-                            this.scene.start('EndGame')
+                    gameObject.x = dragX;
+                    gameObject.caption.x = dragX + gameObject.width / 2;
+                    gameObject.y = dragY;
+                    gameObject.caption.y = dragY + gameObject.height / 2;
+
+                    this.ans_cards.forEach((card) => {
+                        if (Math.abs(gameObject.x - card.x) < 10 && Math.abs(gameObject.y - card.y) < 10 && card.opened != true){
+                            card.setFrame(1);
                         }
                     })
                 }
+            }
+        }, this);
 
-                if (mistake_flag){
-                    this.mistakeCount++;
-                    this.sounds.bulk.play();
-                    if (this.mistakeCount == 2){
-                        this.gameContinuing = false;
-                        this.sounds.gorod.once('complete', function(){
-                            this.gameContinuing = true;
-                        }, this);
-                        this.sounds.gorod.play();
-                    }else if (this.mistakeCount == 4){
-                        this.cards.forEach(card => {
-                            if (this.level_answer.includes(card.value)) {
-                                card.once('animationcomplete', function(animation, frame){
-                                    console.log('animation complete');
-                                    this.gameContinuing = true;
-                                }, this);
-                                card.play('good_blink');
-                                this.gameContinuing = false;
-                            }
-                        });
-                    }else if (this.mistakeCount == 7){
-                        this.gameContinuing = false;
-                        this.sounds.end_wrong.once('complete', function(){
-                            this.gameContinuing = true;
-                        }, this);
-                        this.sounds.end_wrong.play();
-                        this.ans_cards.forEach((card) => {
-                            if(card.open != true){
+        this.input.on('dragend', function (pointer, gameObject) {
+            if(this.cards.indexOf(gameObject) != -1){
+                if (this.gameContinuing){
+                    let mistake_flag = false;
+
+                    this.ans_cards.forEach((card) => {
+                        console.log(card.opened);
+                        if (Math.abs(gameObject.x - card.x) < 10 && Math.abs(gameObject.y - card.y) < 10){
+                            mistake_flag = true;
+                            if(card.opened != true && gameObject.value == card.value){
                                 card.setFrame(1).open();
+                                this.sounds.right_answer.play();
+                                mistake_flag = false;
                             }
-                        })
+                        }
+                        if(card.opened != true){
+                            card.setFrame(0);
+                        }
+                    })
+
+                    if (this.ans_cards.every((x) => x.opened == true && this.gameContinuing == true)){
+                        this.gameContinuing = false;
+                        this.sounds.correct.play();
                         this.time.addEvent({
                             delay: 5000,
                             callback: ()=>{
-                                this.scene.start('EndGame')
+                                if (this.currentLevel == 2){
+                                    this.scene.start('EndGame')
+                                }else{
+                                    this.scene.start('Game2', {level: ++this.currentLevel})
+                                }
                             }
                         })
                     }
-                }
 
-                gameObject.x = this.startDrag_x;
-                gameObject.caption.x = this.startDrag_text_x;
-                gameObject.y = this.startDrag_y;
-                gameObject.caption.y = this.startDrag_text_y;
+                    if (mistake_flag){
+                        this.mistakeCount++;
+                        this.sounds.bulk.play();
+                        if (this.mistakeCount == 2){
+                            this.gameContinuing = false;
+                            this.sounds.game2_riddle.once('complete', function(){
+                                this.gameContinuing = true;
+                            }, this);
+                            this.sounds.game2_riddle.play();
+                        }else if (this.mistakeCount == 4){
+                            this.cards.forEach(card => {
+                                if (this.level_answer.includes(card.value)) {
+                                    card.once('animationcomplete', function(animation, frame){
+                                        console.log('animation complete');
+                                        this.gameContinuing = true;
+                                    }, this);
+                                    card.play('good_blink');
+                                    this.gameContinuing = false;
+                                }
+                            });
+                        }else if (this.mistakeCount == 7){
+                            this.gameContinuing = false;
+                            this.sounds.end_wrong.once('complete', function(){
+                                this.gameContinuing = true;
+                            }, this);
+                            this.sounds.end_wrong.play();
+                            this.ans_cards.forEach((card) => {
+                                if(card.open != true){
+                                    card.setFrame(1).open();
+                                }
+                            })
+                            this.time.addEvent({
+                                delay: 5000,
+                                callback: ()=>{
+                                    this.scene.start('EndGame')
+                                }
+                            })
+                        }
+                    }
+
+                    gameObject.x = this.startDrag_x;
+                    gameObject.caption.x = this.startDrag_text_x;
+                    gameObject.y = this.startDrag_y;
+                    gameObject.caption.y = this.startDrag_text_y;
+                }
             }
         }, this);
 
     }
 
     createAnswer(){
-        this.answerPict = this.add.sprite(0, 0, 'city').setOrigin(0, 0);
-        this.answerText = this.add.text(0, 0, "ПОНИ", {font: "700 40px Inter", fill:"#FFFFFF"}).setOrigin(0).setStroke("#000000", 2).setVisible(false);
+        this.answerPict = this.add.sprite(0, 0, this.levelData.level_answer_pic).setOrigin(0, 0);
+        this.answerText = this.add.text(0, 0, this.levelData.level_answer_text, {font: "700 40px Inter", fill:"#FFFFFF"}).setOrigin(0).setStroke("#000000", 2).setVisible(false);
         this.levelAnswer = ['ПО', 'НИ'];
         this.answerCount = 0;
         this.mistakeCount = -1;
@@ -250,10 +255,14 @@ class Game2Scene extends Phaser.Scene{
         this.initCardsPositions();
         this.initCards();
 
-        this.sounds.game2zadanie.once('complete', function(){
+        if(this.currentLevel == 0){
+            this.sounds.game2_task.once('complete', function(){
+                this.gameContinuing = true;
+            }, this);
+            this.sounds.game2_task.play();
+        }else{
             this.gameContinuing = true;
-        }, this);
-        this.sounds.game2zadanie.play();
+        }
         this.showCards();
     }
 

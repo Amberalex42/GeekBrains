@@ -26,10 +26,10 @@ class StartScene extends Phaser.Scene{
         //     this.scene.start('Game2')
         // })
         this.game1button.on('pointerdown', () => {
-            this.scene.start('Game')
+            this.scene.start('Game', {level: 0})
         })
         this.game2button.on('pointerdown', () => {
-            this.scene.start('Game2')
+            this.scene.start('Game2', {level: 0})
         })
     }
 }

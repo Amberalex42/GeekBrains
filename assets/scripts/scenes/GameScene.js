@@ -3,7 +3,9 @@ class GameScene extends Phaser.Scene{
         super('Game');
     }
 
-    create(){
+    create(data){
+        this.currentLevel = data.level
+        this.levelData = config.game1_data[this.currentLevel]
         this.anims.create({
             key: 'good_blink',
             frames: this.anims.generateFrameNumbers('card_ss', {frames: [1, 0]}),
@@ -30,17 +32,16 @@ class GameScene extends Phaser.Scene{
             bulk: this.sound.add('bulk'),
             correct: this.sound.add('correct'),
             end_session: this.sound.add('end_session'),
-            game1_poni: this.sound.add('game1_poni'),
-            game1_task: this.sound.add('game1_task'),
+            game1_riddle: this.sound.add(this.levelData.level_answer_sound),
+            game1_task: this.sound.add(this.levelData.level_task_sound),
             right_answer: this.sound.add('right_answer'),
             welldone: this.sound.add('welldone'),
-            word2slog: this.sound.add('word2slog'),
-            word3slog: this.sound.add('word3slog')
+            wordslog: this.sound.add(this.levelData.level_answer_slog)
         };
     }
 
     createBackground(){
-        this.add.sprite(0, 0, 'bg').setOrigin(0, 0);
+        this.add.sprite(0, 0, 'bg1').setOrigin(0, 0);
 
         this.add.graphics()
             .fillStyle(0xffffff, 1)
@@ -83,16 +84,16 @@ class GameScene extends Phaser.Scene{
     createCards(){
         this.cards = [];
 
-        for (let value of config.cards){
+        for (let value of this.levelData.cards){
             this.cards.push(new Card(this, value));
         }
         this.input.on('gameobjectdown', this.onCardClicked, this)
     }
 
     createAnswer(){
-        this.answerPict = this.add.sprite(0, 0, 'answer').setVisible(false).setOrigin(0, 0);
-        this.answerText = this.add.text(0, 0, "ПОНИ", {font: "700 40px Inter", fill:"#FFFFFF"}).setOrigin(0).setStroke("#000000", 2).setVisible(false);
-        this.levelAnswer = ['ПО', 'НИ'];
+        this.answerPict = this.add.sprite(0, 0, "question").setOrigin(0, 0);
+        this.answerText = this.add.text(0, 0, this.levelData.level_answer_text, {font: "700 40px Inter", fill:"#FFFFFF"}).setOrigin(0).setStroke("#000000", 2).setVisible(false);
+        this.levelAnswer = this.levelData.level_answer;
         this.answerCount = 0;
         this.mistakeCount = -1;
     }
@@ -102,19 +103,33 @@ class GameScene extends Phaser.Scene{
         this.initCardsPositions();
         this.initCards();
 
-        this.sounds.game1_task.once('complete', function(){
-            this.sounds.game1_poni.once('complete', function(){
-                this.gameContinuing = true;
+        if (this.currentLevel == 0){
+            this.sounds.game1_task.once('complete', function(){
+                this.sounds.wordslog.once('complete', function(){
+                    this.sounds.game1_riddle.once('complete', function(){
+                        this.gameContinuing = true;
+                    }, this)
+                    this.sounds.game1_riddle.play();
+                }, this)
+                this.sounds.wordslog.play();
+            }, this);
+            this.sounds.game1_task.play();
+        }else{
+            this.sounds.wordslog.once('complete', function(){
+                this.sounds.game1_riddle.once('complete', function(){
+                    this.gameContinuing = true;
+                }, this)
+                this.sounds.game1_riddle.play();
             }, this)
-            this.sounds.game1_poni.play();
-        }, this);
-        this.sounds.game1_task.play();
+            this.sounds.wordslog.play();
+        }
+        
         this.showCards();
     }
 
     initCardsPositions(){
         let positions = [];
-        let answerTexture = this.textures.get('answer').getSourceImage();
+        let answerTexture = this.textures.get(this.levelData.level_answer_pic).getSourceImage();
         let cardWidth = 190 + 35;
         let cardHeight = 190 + 35;
         //let offsetX = (this.sys.game.config.width - cardWidth * config.cols - answerTexture.width - 100)/2 + cardWidth / 2;
@@ -173,11 +188,12 @@ class GameScene extends Phaser.Scene{
     onCardClicked(pointer, card){
         if (card.name === "soundButton"){
             this.gameContinuing = false;
-            this.sounds.game1_poni.once('complete', function(){
+            this.sounds.game1_task.once('complete', function(){
                 this.gameContinuing = true;
             }, this)
-            this.sounds.game1_poni.play();
+            this.sounds.game1_task.play();
         }else if (card.name === "closeButton"){
+            this.game.sound.stopAll();
             this.scene.start('Start');
         }else{
             console.log(card);
@@ -188,14 +204,19 @@ class GameScene extends Phaser.Scene{
                 card.setFrame(1);
                 this.answerCount++;
                 if (this.answerCount === this.levelAnswer.length){
-                    this.answerPict.setVisible(true);
+                    this.answerPict.setTexture(this.levelData.level_answer_pic);
                     this.answerText.setVisible(true);
                     this.sounds.correct.play();
                     this.gameContinuing = false;
                     this.time.addEvent({
                         delay: 5000,
                         callback: ()=>{
-                            this.scene.start('BetweenGame')
+                            if(this.currentLevel == 2){
+                                this.scene.start('BetweenGame')
+                            }else{
+                                this.scene.start('Game', {level: ++this.currentLevel})
+                            }
+                            
                         }
                     })
                 }else{
@@ -208,7 +229,7 @@ class GameScene extends Phaser.Scene{
                     this.gameContinuing = true;
                     if (animation.key == 'bad_blink'){
                         if (this.mistakeCount == 0){
-                            this.sounds.game1_poni.play();
+                            this.sounds.game1_riddle.play();
                         }else if (this.mistakeCount == 1){
                             this.answerPict.setVisible(true);
                         }else if(this.mistakeCount == 2 || this.mistakeCount == 3){

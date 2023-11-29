@@ -10,14 +10,20 @@ class PreloadScene extends Phaser.Scene{
     }
 
     preloadAssets(){
-        this.load.image('bg', 'assets/sprites/background.png');
+        this.load.image('bg1', 'assets/sprites/background1.png');
+        this.load.image('bg2', 'assets/sprites/background2.png');
         this.load.image('dolphin', 'assets/sprites/dolphin.png');
         this.load.image('endgame', 'assets/sprites/endgame.png');
         this.load.image('betweengame', 'assets/sprites/betweengame.png');
+        this.load.image('question', 'assets/sprites/question.png');
         this.load.image('card', 'assets/sprites/card.png');
-        this.load.image('answer', 'assets/sprites/pony.png');
+        this.load.image('pony', 'assets/sprites/pony.png');
+        this.load.image('sova', 'assets/sprites/sova.png');
+        this.load.image('koleso', 'assets/sprites/koleso.png');
         this.load.image('ball', 'assets/sprites/ball.png');
         this.load.image('city', 'assets/sprites/city.png');
+        this.load.image('lodka', 'assets/sprites/lodka.png');
+        this.load.image('sapog', 'assets/sprites/sapog.png');
         this.load.image('avatar', 'assets/sprites/avatar.png');
         this.load.image('star', 'assets/sprites/star.png');
         this.load.image('progress', 'assets/sprites/progress.png');
@@ -45,12 +51,14 @@ class PreloadScene extends Phaser.Scene{
         this.load.audio('end_session', 'assets/sounds/end_session.mp3');
         this.load.audio('end_wrong', 'assets/sounds/end_wrong.mp3');
         this.load.audio('game1_poni', 'assets/sounds/game1_poni.mp3');
+        this.load.audio('game1_sova', 'assets/sounds/game1_sova.mp3');
+        this.load.audio('game1_koleso', 'assets/sounds/game1_koleso.mp3');
         this.load.audio('game1_task', 'assets/sounds/game1_task.mp3');
         this.load.audio('right_answer', 'assets/sounds/right_answer.mp3');
         this.load.audio('welldone', 'assets/sounds/welldone.mp3');
         this.load.audio('word2slog', 'assets/sounds/word2slog.mp3');
         this.load.audio('word3slog', 'assets/sounds/word3slog.mp3');
-        this.load.audio('game2zadanie', 'assets/sounds/game2_zadanie.mp3');
+        this.load.audio('game2_task', 'assets/sounds/game2_zadanie.mp3');
         this.load.audio('gorod', 'assets/sounds/gorod.mp3');
         this.load.audio('sapog', 'assets/sounds/sapog.mp3');
         this.load.audio('lodka', 'assets/sounds/lodka.mp3');
