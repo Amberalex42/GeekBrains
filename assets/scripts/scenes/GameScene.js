@@ -229,8 +229,13 @@ class GameScene extends Phaser.Scene{
                     this.gameContinuing = true;
                     if (animation.key == 'bad_blink'){
                         if (this.mistakeCount == 0){
+                            this.gameContinuing = false;
+                            this.sounds.game1_riddle.once('complete', function(){
+                                this.gameContinuing = true;
+                            }, this)
                             this.sounds.game1_riddle.play();
                         }else if (this.mistakeCount == 1){
+                            this.answerPict.setTexture(this.levelData.level_answer_pic);
                             this.answerPict.setVisible(true);
                         }else if(this.mistakeCount == 2 || this.mistakeCount == 3){
                             this.cards.forEach(card => {

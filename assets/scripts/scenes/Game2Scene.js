@@ -202,8 +202,16 @@ class Game2Scene extends Phaser.Scene{
                             }, this);
                             this.sounds.game2_riddle.play();
                         }else if (this.mistakeCount == 4){
+                            var already_opened = []
+                            this.ans_cards.forEach(card => {
+                                if(card.opened){
+                                    already_opened.push(card.value)
+                                }
+                            }, this)
+                            console.log(already_opened);
+
                             this.cards.forEach(card => {
-                                if (this.level_answer.includes(card.value)) {
+                                if (this.level_answer.includes(card.value) && already_opened.indexOf(card.value) == -1) {
                                     card.once('animationcomplete', function(animation, frame){
                                         console.log('animation complete');
                                         this.gameContinuing = true;
