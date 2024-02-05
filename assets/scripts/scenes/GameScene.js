@@ -31,6 +31,7 @@ class GameScene extends Phaser.Scene{
         this.sounds = {
             bulk: this.sound.add('bulk'),
             correct: this.sound.add('correct'),
+            end_attempts: this.sound.add('end_attempts'),
             end_session: this.sound.add('end_session'),
             game1_riddle: this.sound.add(this.levelData.level_answer_sound),
             game1_task: this.sound.add(this.levelData.level_task_sound),
@@ -61,24 +62,25 @@ class GameScene extends Phaser.Scene{
 
         this.add.sprite(80, 80, 'avatar').setOrigin(0, 0);
         this.add.sprite(80, 315, 'star').setOrigin(0, 0);
-        this.add.text(112, 310, "35", {font: "600 32px Inter", fill:"#3C90DE"}).setOrigin(0);
+        this.add.text(112, 310, "0", {font: "600 32px Inter", fill:"#3C90DE"}).setOrigin(0);
         this.add.text(77, 440, "Статус: ", {font: "600 24px Inter", fill:"#B6C6DF"}).setOrigin(0);
-        this.add.text(176, 440, "Бывалый", {font: "600 24px Inter", fill:"#3C90DE"}).setOrigin(0);
+        this.add.text(176, 440, "Новичок", {font: "600 24px Inter", fill:"#3C90DE"}).setOrigin(0);
         this.add.sprite(80, 365, 'progress').setOrigin(0, 0);
-        for(let i = 0; i < 6; i++){
+        this.add.sprite(66, 564, 'medal_full').setOrigin(0, 0);
+        for(let i = 1; i < 6; i++){
             this.add.sprite(66 + 60 * i, 564, 'medal').setOrigin(0, 0);
         }
         this.add.sprite(75, 713, 'calendar').setOrigin(0, 0);
-        this.add.text(132, 705, "7", {font: "700 56px Inter", fill:"#3C90DE"}).setOrigin(0);
+        this.add.text(132, 705, "1", {font: "700 56px Recoleta", fill:"#3C90DE"}).setOrigin(0);
         this.add.text(180, 707, "дней без\nпропуска", {font: "600 24px Inter", fill:"#B6C6DF"}).setOrigin(0);
         this.soundButton = this.add.sprite(518, 78, 'sound').setOrigin(0, 0).setInteractive();
         this.soundButton.name = "soundButton";
-        this.add.text(609, 78, "Угадай-ка", {font: "500 54px Inter", fill:"#B7C4DD"}).setOrigin(0);
+        this.add.text(609, 78, "Угадай-ка", {font: "500 54px Recoleta", fill:"#8F9BB2"}).setOrigin(0);
         this.add.text(609, 158, "Угадай слова, нажимая на клеточки с нужными слогами", {font: "500 24px Inter", fill:"#B7C4DD"}).setOrigin(0);
         this.closeButton = this.add.sprite(1776, 80, 'close').setOrigin(0, 0).setInteractive();
         this.closeButton.name = "closeButton";
         this.add.text(221, 80, "\nИмя\nФамилия\n", {font: "500 24px Inter", fill:"#1E1E1E"}).setOrigin(0);
-        this.add.text(221, 166, "Новичок", {font: "400 24px Inter", fill:"#3C90DE"}).setOrigin(0);
+        //this.add.text(221, 166, "Новичок", {font: "400 24px Inter", fill:"#3C90DE"}).setOrigin(0);
     }
 
     createCards(){
@@ -257,6 +259,18 @@ class GameScene extends Phaser.Scene{
                             this.answerPict.setVisible(true);
                             this.answerText.setVisible(true);
                             this.gameContinuing = false;
+                            this.sounds.end_attempts.play();
+                            this.time.addEvent({
+                                delay: 5000,
+                                callback: ()=>{
+                                    if(this.currentLevel == 2){
+                                        this.scene.start('BetweenGame')
+                                    }else{
+                                        this.scene.start('Game', {level: ++this.currentLevel})
+                                    }
+                                    
+                                }
+                            })
                         }
                     }
                 }, this);

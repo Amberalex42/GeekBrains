@@ -31,6 +31,11 @@
             src: url('assets/fonts/Inter-700.ttf');
             font-weight: 700
         }
+        @font-face {
+            font-family: 'Recoleta';
+            src: url('assets/fonts/Recoleta.ttf');
+            font-weight: 500
+        }
         .fontPreloadInter400 {
             font-family: 'Inter';
             font-weight: 400;
@@ -55,6 +60,12 @@
             position: absolute;
             left: -100px;
         }
+        .fontPreloadInter700 {
+            font-family: 'Recoleta';
+            font-weight: 500;
+            position: absolute;
+            left: -100px;
+        }
     </style>
 </head>
 <body>
@@ -62,6 +73,7 @@
     <div class="fontPreloadInter500">.</div>
     <div class="fontPreloadInter600">.</div>
     <div class="fontPreloadInter700">.</div>
+    <div class="fontPreloadRecoleta">.</div>
     <script src="assets/scripts/phaser.js"></script>
     <script src="assets/scripts/prefabs/Card.js"></script>
     <script src="assets/scripts/classes/LoadingBar.js"></script>

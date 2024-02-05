@@ -28,6 +28,7 @@ class PreloadScene extends Phaser.Scene{
         this.load.image('star', 'assets/sprites/star.png');
         this.load.image('progress', 'assets/sprites/progress.png');
         this.load.image('medal', 'assets/sprites/medal.png');
+        this.load.image('medal_full', 'assets/sprites/medal_full.png');
         this.load.image('calendar', 'assets/sprites/calendar.png');
         this.load.image('sound', 'assets/sprites/sound.png');
         // this.load.image('leaderboard', 'assets/sprites/leaderboard.svg');
@@ -50,6 +51,7 @@ class PreloadScene extends Phaser.Scene{
         this.load.audio('correct', 'assets/sounds/correct.mp3');
         this.load.audio('end_session', 'assets/sounds/end_session.mp3');
         this.load.audio('end_wrong', 'assets/sounds/end_wrong.mp3');
+        this.load.audio('end_attempts', 'assets/sounds/end_attempts.mp3');
         this.load.audio('game1_poni', 'assets/sounds/game1_poni.mp3');
         this.load.audio('game1_sova', 'assets/sounds/game1_sova.mp3');
         this.load.audio('game1_koleso', 'assets/sounds/game1_koleso.mp3');
