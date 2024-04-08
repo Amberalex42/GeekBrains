@@ -33,11 +33,13 @@ class GameScene extends Phaser.Scene{
             correct: this.sound.add('correct'),
             end_attempts: this.sound.add('end_attempts'),
             end_session: this.sound.add('end_session'),
-            game1_riddle: this.sound.add(this.levelData.level_answer_sound),
-            game1_task: this.sound.add(this.levelData.level_task_sound),
             right_answer: this.sound.add('right_answer'),
             welldone: this.sound.add('welldone'),
-            wordslog: this.sound.add(this.levelData.level_answer_slog)
+
+            wordslog: this.sound.add(this.levelData.level_answer_slog),
+            game1_anwer: this.sound.add(this.levelData.level_answer_sound),
+            game1_riddle: this.sound.add(this.levelData.level_riddle_sound),
+            game1_task: this.sound.add(this.levelData.level_task_sound)
         };
     }
 
@@ -208,6 +210,9 @@ class GameScene extends Phaser.Scene{
                 if (this.answerCount === this.levelAnswer.length){
                     this.answerPict.setTexture(this.levelData.level_answer_pic);
                     this.answerText.setVisible(true);
+                    this.sounds.correct.once('complete', function(){
+                        this.sounds.game1_riddle.play();
+                    }, this);
                     this.sounds.correct.play();
                     this.gameContinuing = false;
                     this.time.addEvent({
@@ -259,6 +264,9 @@ class GameScene extends Phaser.Scene{
                             this.answerPict.setVisible(true);
                             this.answerText.setVisible(true);
                             this.gameContinuing = false;
+                            this.sounds.end_attempts.once('complete', function(){
+                                this.sounds.game1_riddle.play();
+                            }, this);
                             this.sounds.end_attempts.play();
                             this.time.addEvent({
                                 delay: 5000,

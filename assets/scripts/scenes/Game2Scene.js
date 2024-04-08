@@ -35,9 +35,10 @@ class Game2Scene extends Phaser.Scene{
             end_wrong: this.sound.add('end_wrong'),
             right_answer: this.sound.add('right_answer'),
             welldone: this.sound.add('welldone'),
+
+            wordslog: this.sound.add(this.levelData.level_answer_slog),
             game2_task: this.sound.add(this.levelData.level_task_sound),
-            game2_riddle: this.sound.add(this.levelData.level_answer_sound),
-            wordslog: this.sound.add(this.levelData.level_answer_slog)
+            game2_riddle: this.sound.add(this.levelData.level_answer_sound)
         };
     }
 
@@ -79,7 +80,12 @@ class Game2Scene extends Phaser.Scene{
             if (this.gameContinuing){
                 this.gameContinuing = false;
                 this.sounds.game2_task.once('complete', function(){
-                    this.gameContinuing = true;
+                    this.time.addEvent({
+                        delay: 2000,
+                        callback: ()=>{
+                            this.gameContinuing = true;
+                        }
+                    })
                 }, this);
                 this.sounds.game2_task.play();
             }
@@ -124,17 +130,19 @@ class Game2Scene extends Phaser.Scene{
         }
 
         this.input.on('dragstart', function (pointer, gameObject) {
+            
             if(this.cards.indexOf(gameObject) != -1){
                 if (this.gameContinuing){
                     this.startDrag_x = gameObject.x
-                    this.startDrag_text_x = gameObject.caption.x
                     this.startDrag_y = gameObject.y
+                    this.startDrag_text_x = gameObject.caption.x
                     this.startDrag_text_y = gameObject.caption.y
                 }
             }  
         }, this);
 
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
+            
             if(this.cards.indexOf(gameObject) != -1){
                 if (this.gameContinuing){
                     this.ans_cards.forEach((card) => {
@@ -144,8 +152,8 @@ class Game2Scene extends Phaser.Scene{
                     })
 
                     gameObject.x = dragX;
-                    gameObject.caption.x = dragX + gameObject.width / 2;
                     gameObject.y = dragY;
+                    gameObject.caption.x = dragX + gameObject.width / 2;
                     gameObject.caption.y = dragY + gameObject.height / 2;
 
                     this.ans_cards.forEach((card) => {
@@ -179,11 +187,14 @@ class Game2Scene extends Phaser.Scene{
 
                     if (this.ans_cards.every((x) => x.opened == true && this.gameContinuing == true)){
                         this.gameContinuing = false;
+                        this.sounds.correct.once('complete', function(){
+                            this.sounds.game2_riddle.play();
+                        }, this);
                         this.sounds.correct.play();
                         this.time.addEvent({
                             delay: 5000,
                             callback: ()=>{
-                                if (this.currentLevel == 2){
+                                if (this.currentLevel == 4){
                                     this.scene.start('EndGame')
                                 }else{
                                     this.scene.start('Game2', {level: ++this.currentLevel})
@@ -198,7 +209,12 @@ class Game2Scene extends Phaser.Scene{
                         if (this.mistakeCount == 2){
                             this.gameContinuing = false;
                             this.sounds.game2_riddle.once('complete', function(){
-                                this.gameContinuing = true;
+                                this.time.addEvent({
+                                    delay: 2000,
+                                    callback: ()=>{
+                                        this.gameContinuing = true;
+                                    }
+                                })
                             }, this);
                             this.sounds.game2_riddle.play();
                         }else if (this.mistakeCount == 4){
@@ -225,6 +241,9 @@ class Game2Scene extends Phaser.Scene{
                             this.sounds.end_wrong.once('complete', function(){
                                 this.gameContinuing = true;
                             }, this);
+                            this.sounds.end_wrong.once('complete', function(){
+                                this.sounds.game2_riddle.play();
+                            }, this);
                             this.sounds.end_wrong.play();
                             this.ans_cards.forEach((card) => {
                                 if(card.open != true){
@@ -234,7 +253,7 @@ class Game2Scene extends Phaser.Scene{
                             this.time.addEvent({
                                 delay: 5000,
                                 callback: ()=>{
-                                    if (this.currentLevel == 2){
+                                    if (this.currentLevel == 4){
                                         this.scene.start('EndGame')
                                     }else{
                                         this.scene.start('Game2', {level: ++this.currentLevel})
@@ -269,7 +288,12 @@ class Game2Scene extends Phaser.Scene{
 
         if(this.currentLevel == 0){
             this.sounds.game2_task.once('complete', function(){
-                this.gameContinuing = true;
+                this.time.addEvent({
+                    delay: 2000,
+                    callback: ()=>{
+                        this.gameContinuing = true;
+                    }
+                })
             }, this);
             this.sounds.game2_task.play();
         }else{
@@ -289,7 +313,7 @@ class Game2Scene extends Phaser.Scene{
         let offsetY = 276;
 
         //this.answerPict.setPosition((this.sys.game.config.width + cardWidth * config.cols + 100) / 2, this.sys.game.config.height / 2);
-        this.answerPict.setPosition(650, 450);
+        this.answerPict.setPosition(677, 381);
         //this.answerText.setPosition(this.answerPict.x, this.answerPict.y + answerTexture.height / 2 + 20);
         this.answerText.setPosition(1231, 378);
 
