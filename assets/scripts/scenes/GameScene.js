@@ -37,7 +37,7 @@ class GameScene extends Phaser.Scene{
             welldone: this.sound.add('welldone'),
 
             wordslog: this.sound.add(this.levelData.level_answer_slog),
-            game1_anwer: this.sound.add(this.levelData.level_answer_sound),
+            game1_answer: this.sound.add(this.levelData.level_answer_sound),
             game1_riddle: this.sound.add(this.levelData.level_riddle_sound),
             game1_task: this.sound.add(this.levelData.level_task_sound)
         };
@@ -211,12 +211,12 @@ class GameScene extends Phaser.Scene{
                     this.answerPict.setTexture(this.levelData.level_answer_pic);
                     this.answerText.setVisible(true);
                     this.sounds.correct.once('complete', function(){
-                        this.sounds.game1_riddle.play();
+                        this.sounds.game1_answer.play();
                     }, this);
                     this.sounds.correct.play();
                     this.gameContinuing = false;
                     this.time.addEvent({
-                        delay: 5000,
+                        delay: 7000,
                         callback: ()=>{
                             if(this.currentLevel == 2){
                                 this.scene.start('BetweenGame')
@@ -265,11 +265,11 @@ class GameScene extends Phaser.Scene{
                             this.answerText.setVisible(true);
                             this.gameContinuing = false;
                             this.sounds.end_attempts.once('complete', function(){
-                                this.sounds.game1_riddle.play();
+                                this.sounds.game1_answer.play();
                             }, this);
                             this.sounds.end_attempts.play();
                             this.time.addEvent({
-                                delay: 5000,
+                                delay: 7000,
                                 callback: ()=>{
                                     if(this.currentLevel == 2){
                                         this.scene.start('BetweenGame')

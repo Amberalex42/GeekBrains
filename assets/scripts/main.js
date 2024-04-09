@@ -20,7 +20,7 @@ let config = {
         {
             level_riddle_sound: 'game1_poni',
             level_task_sound: 'game1_task',
-            level_answer_sound: 'game1_answer_pony',
+            level_answer_sound: 'game1_answer_poni',
             cards: ["ПО", "БО", "НИ", "НЕ", "НЯ", "ПА", "БА", "ЛО", "ШАДЬ"],
             level_answer_slog: 'word2slog',
             level_answer_pic: 'pony',
